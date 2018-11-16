@@ -20,9 +20,17 @@
         name: pexpect
         executable: "/usr/local/conda/envs/esgf-pub/bin/pip"
 
+    - name: Delete existing database
+      expect:
+        command: dropdb -U dbsuper esgcet
+        responses:
+          Password: "CHANGEME"
+      environment:
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
+
     - name: Import postgres database
       expect:
-        command: psql --username dbsuper esgcet < /root/esgf-test/db.sql
+        command: bash -c 'psql --username dbsuper esgcet < /root/esgf-test/db.sql'
         responses:
           Password: "CHANGEME"
       environment:
