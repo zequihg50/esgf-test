@@ -20,6 +20,14 @@
         name: pexpect
         executable: "/usr/local/conda/envs/esgf-pub/bin/pip"
 
+    - name: Delete existing database sessions
+      expect:
+        command: psql -c 'select pg_terminate_backend(procpid) from pg_stat_activity where datname = "esgcet"' esgcet dbsuper
+        responses:
+          Password: "CHANGEME"
+      environment:
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
+
     - name: Delete existing database
       expect:
         command: dropdb -U dbsuper esgcet

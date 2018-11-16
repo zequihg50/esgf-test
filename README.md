@@ -3,11 +3,6 @@ ESGF Test installation and publication.
 
 You must set your globus user and password in `esg-autoinstall.conf`.
 
-Cog test user:
-username: pepito
-openid:
-password: Cochecitos1!
-
 ```bash
 vagrant up di
 vagrant ssh di
@@ -34,3 +29,7 @@ pip install ansible
 cd /root/esgf-test
 ansible-playbook main.yml
 ```
+
+Now:
+- asdf
+- asdf
