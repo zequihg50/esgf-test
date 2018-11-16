@@ -1,0 +1,6 @@
+[all]
+esgf ansible_connection=local ansible_host=localhost
+
+[gateway]
+esgf
+

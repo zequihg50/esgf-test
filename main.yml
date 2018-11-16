@@ -1,0 +1,55 @@
+- name: Generate DRS and local publication
+  hosts: gateway
+  tasks:
+    - name: Copy config files
+      copy:
+        src: "{{ item }}"
+        dest: /esg/config/{{ item }}
+      with_items:
+        - esgf_idp_static.xml
+        - esgf_known_providers.xml
+        - esgf_policies_local.xml
+        - esgf_ats_static.xml
+
+    - name: Add hostcert to grid-security
+      shell: cp /etc/certs/hostcert.pem /etc/grid-security/certificates/$(openssl x509 -hash -noout < /etc/certs/hostcert.pem).0
+
+    # Replicate SQL database
+    - name: Install pyexpect
+      pip:
+        name: pexpect
+        executable: "/usr/local/conda/envs/esgf-pub/bin/pip"
+
+    - name: Import postgres database
+      expect:
+        command: psql --username dbsuper esgcet < /root/esgf-test/db.sql
+        responses:
+          Password: "CHANGEME"
+      environment:
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
+        
+    # DRS and mapfile
+    - name: Copy sftlf.nc to /esg/data/test
+      copy: src=sftlf.nc dest=/esg/data/test/sftlf.nc
+
+    - name: mkdir /esg/data/drs
+      file:
+        state: directory
+        path: /esg/data/drs
+
+    - name: Copy esg.test.ini
+      copy: src=esg.test.ini dest=/esg/config/esgcet/esg.test.ini
+
+    - name: esgdrs
+      command: esgdrs {{ item }} --project test --symlink  --set-value project=Test /esg/data/test/
+      args:
+        chdir: /esg/data/drs
+      with_items: [list, tree, todo, upgrade]
+      tags: [never, drs]
+
+    - name: esgmapfile
+      command: esgmapfile --project test Test/
+      args:
+        chdir: /esg/data/drs
+      tags: [never, drs]
+
