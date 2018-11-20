@@ -78,3 +78,9 @@
         chdir: /esg/data/drs
       tags: [never, drs]
 
+    - name: Allow access from everywhere to COG
+      replace:
+        path: /usr/local/cog/cog_install/settings.py
+        regexp: ALLOWED_HOSTS(.*)
+        replace: ALLOWED_HOSTS = ['*']
+      tags: asdf
