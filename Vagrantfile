@@ -6,7 +6,6 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
   config.vm.define :di do |di|
-    di.vm.hostname = "di"
     di.vm.box = "centos/6"
     di.vm.network "private_network", ip: "172.28.128.3"
     di.vm.network "forwarded_port", host: 4000, guest: 8080
@@ -19,6 +18,16 @@ Vagrant.configure("2") do |config|
       vb.linked_clone = true
       vb.customize ["modifyvm", :id, "--memory", "1024"]
     end
+  end
+
+  config.vm.define :install do |install|
+    install.vm.box = "esgf_data_index_idp.box"
+    install.vm.network "private_network", ip: "172.28.128.3"
+    install.vm.hostname = "esgf.test.es"
+  end
+
+  config.vm.define :publicando do |di|
+    di.vm.box = "publicando.box"
   end
 
   config.vm.provision "shell", inline: "sudo yum install -y expect libselinux-python"
