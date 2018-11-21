@@ -89,6 +89,11 @@
       environment:
         PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
 
+    - name: Copy certificates into {{ ansible_env.HOME }}/.globus
+      copy:
+        src: /etc/grid-security/certificates
+        dest: "{{ ansible_env.HOME }}/.globus"
+
     - name: esgdrs
       command: esgdrs {{ item }} --project test --symlink  --set-value project=Test /esg/data/test/
       args:
@@ -103,4 +108,10 @@
       tags: [never, drs]
 
     - name: Publish
-      command: esgpublish --project test --map mapfiles/ --service fileservice --publish
+      expect:
+        command: esgpublish --project test --map mapfiles/ --service fileservice --thredds --publish
+        chdir: /esg/data/drs
+        responses:
+          Allow: no
+      environment:
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
