@@ -81,6 +81,10 @@
     - name: Allow access from everywhere to COG
       replace:
         path: /usr/local/cog/cog_install/settings.py
-        regexp: ALLOWED_HOSTS(.*)
+        regexp: ALLOWED_HOSTS = siteManager\.get\('ALLOWED_HOSTS', default=SITE_DOMAIN\)\.split\(","\)
         replace: ALLOWED_HOSTS = ['*']
-      tags: asdf
+
+    - name: Create .globus dir
+      file:
+        state: directory
+        path: "{{ ansible_env.HOME }}/.globus"
