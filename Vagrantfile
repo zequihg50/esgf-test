@@ -20,15 +20,5 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define :install do |install|
-    install.vm.box = "esgf_data_index_idp.box"
-    install.vm.network "private_network", ip: "172.28.128.3"
-    install.vm.hostname = "esgf.test.es"
-  end
-
-  config.vm.define :publicando do |di|
-    di.vm.box = "publicando.box"
-  end
-
   config.vm.provision "shell", inline: "sudo yum install -y expect libselinux-python"
 end

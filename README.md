@@ -1,5 +1,5 @@
 # esgf-test
-ESGF Test installation and publication.
+ESGF Test installation and publication in a localhost (hostname: esgf.test.es, IP: 172.28.128.3) data, index, IdP node.
 
 **You must set your globus user and password in `esg-autoinstall.conf`.**
 
