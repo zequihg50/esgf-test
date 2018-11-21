@@ -14,7 +14,7 @@
     - name: Add hostcert to grid-security
       shell: cp /etc/certs/hostcert.pem /etc/grid-security/certificates/$(openssl x509 -hash -noout < /etc/certs/hostcert.pem).0
 
-    # Replicate SQL database
+    # Copy SQL database (Provide user with publication permissions -> user: pepito, password: Cochecitos1!)
     - name: Install pyexpect
       pip:
         name: pexpect
@@ -52,18 +52,42 @@
           Password: "CHANGEME"
       environment:
         PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
+
+    # Various changes
+    - name: Allow access from everywhere to COG
+      replace:
+        path: /usr/local/cog/cog_install/settings.py
+        regexp: ALLOWED_HOSTS = siteManager\.get\('ALLOWED_HOSTS', default=SITE_DOMAIN\)\.split\(","\)
+        replace: ALLOWED_HOSTS = ['*']
+
+    - name: Create .globus dir
+      file:
+        state: directory
+        path: "{{ ansible_env.HOME }}/.globus"
         
     # DRS and mapfile
     - name: Copy sftlf.nc to /esg/data/test
       copy: src=sftlf.nc dest=/esg/data/test/sftlf.nc
+      tags: drs
 
     - name: mkdir /esg/data/drs
       file:
         state: directory
         path: /esg/data/drs
+      tags: drs
 
     - name: Copy esg.test.ini
       copy: src=esg.test.ini dest=/esg/config/esgcet/esg.test.ini
+      tags: drs
+
+    # Publication
+    - name: myproxy-logon
+      expect:
+        command: myproxy-logon -b -s esgf.test.es -l pepito -p 7512 -t 72 -o {{ ansible_env.HOME }}/.globus/certificate-file
+        responses:
+          pass: Cochecitos1!
+      environment:
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
 
     - name: esgdrs
       command: esgdrs {{ item }} --project test --symlink  --set-value project=Test /esg/data/test/
@@ -78,13 +102,5 @@
         chdir: /esg/data/drs
       tags: [never, drs]
 
-    - name: Allow access from everywhere to COG
-      replace:
-        path: /usr/local/cog/cog_install/settings.py
-        regexp: ALLOWED_HOSTS = siteManager\.get\('ALLOWED_HOSTS', default=SITE_DOMAIN\)\.split\(","\)
-        replace: ALLOWED_HOSTS = ['*']
-
-    - name: Create .globus dir
-      file:
-        state: directory
-        path: "{{ ansible_env.HOME }}/.globus"
+    - name: Publish
+      command: esgpublish --project test --map mapfiles/ --service fileservice --publish
