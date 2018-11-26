@@ -79,6 +79,7 @@
     - name: Copy esg.test.ini
       copy: src=esg.test.ini dest=/esg/config/esgcet/esg.test.ini
       tags: drs
+      notify: restart
 
     # Publication
     - name: myproxy-logon
@@ -105,13 +106,21 @@
       command: esgmapfile --project test Test/
       args:
         chdir: /esg/data/drs
-      tags: [never, drs]
-
+      tags: [never, drs]   
+               
+    - name: Restart esg-node if required
+      meta: flush_handlers   
+                                                                 
     - name: Publish
-      expect:
-        command: esgpublish --project test --map mapfiles/ --service fileservice --thredds --publish
+      expect:        
+        command: esgpublish --project test --map mapfiles/ --service fileservice --thredds --publish                                   
         chdir: /esg/data/drs
-        responses:
+        responses:       
           Allow: no
+        timeout: 180                                                                                                                   
       environment:
-        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/
+        PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/                                                        
+                  
+  handlers:                                                                                                                            
+    - name: restart
+      command: esg-node restart 
