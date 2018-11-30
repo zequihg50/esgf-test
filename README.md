@@ -16,9 +16,9 @@ git clone https://github.com/zequihg50/esgf-test
 
 # Fetch ESGF installer
 cd /usr/local/bin/
-wget http://distrib-coffee.ipsl.jussieu.fr/pub/esgf/dist/devel/2.8/b7/esgf-installer/esg-bootstrap
+wget http://distrib-coffee.ipsl.jussieu.fr/pub/esgf/dist/2.8/RC1/esgf-installer/esg-bootstrap
 chmod 555 esg-bootstrap
-./esg-bootstrap --devel
+./esg-bootstrap
 
 cp /root/esgf-test/esg-autoinstall.conf /usr/local/etc/esg-autoinstall.conf
 script -c '/usr/local/bin/esg-autoinstall' installation.log
