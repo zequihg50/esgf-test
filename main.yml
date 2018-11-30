@@ -120,6 +120,12 @@
         timeout: 180                                                                                                                   
       environment:
         PYTHONPATH: /usr/local/conda/envs/esgf-pub/lib/python2.7/site-packages/                                                        
+
+    - name: Delete old dataset entry in esgcet/catalog.xml
+      lineinfile:
+        path: /esg/content/thredds/esgcet/catalog.xml
+        state: absent
+        regexp: 20181115
                   
   handlers:                                                                                                                            
     - name: restart
