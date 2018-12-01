@@ -25,7 +25,7 @@ script -c '/usr/local/bin/esg-autoinstall' installation.log
 esg-node restart
 
 source /usr/local/conda/bin/activate esgf-pub
-pip install ansible
+pip install ansible==2.5
 cd /root/esgf-test
 ansible-playbook main.yml --tags drs
 ansible-playbook main.yml
