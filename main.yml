@@ -81,6 +81,11 @@
       tags: drs
       notify: restart
 
+    - name: Copy esg.ini (change dataroot form esg_dataroot to esgcet)
+      copy: src=esg.ini dest=/esg/config/esgcet/esg.ini
+      tags: drs
+      notify: restart
+
     # Publication
     - name: myproxy-logon
       expect:
